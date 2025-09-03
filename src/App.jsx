@@ -1,7 +1,7 @@
 function App() {
   return (
     <>
-      <h1>Dev-Tinder</h1>
+      <button className="btn btn-primary">Hello DaisyUI 🚀</button>
     </>
   );
 }
