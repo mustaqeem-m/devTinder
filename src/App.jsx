@@ -1,8 +1,13 @@
+import Navbar from './Components/Navbar';
+
 function App() {
   return (
-    <>
-      <button className="btn btn-primary">Hello DaisyUI 🚀</button>
-    </>
+    <div>
+      <div>
+        <Navbar />
+      </div>
+      <navbutton className="btn btn-primary">Hello DaisyUI 🚀</navbutton>
+    </div>
   );
 }
 
