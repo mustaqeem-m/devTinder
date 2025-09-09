@@ -6,6 +6,32 @@ const User = require('../model/user.js');
 
 app.use(express.json());
 
+app.use('/userbyemail', async (req, res) => {
+  try {
+    const user = await User.findOne({ emailId: req.body.emailId });
+    if (!user) {
+      res.send('User dead!');
+    } else {
+      res.send(user);
+    }
+  } catch (err) {
+    res.send(`${err}`);
+  }
+});
+
+app.use('/feed', async (req, res) => {
+  try {
+    const user = await User.find({});
+    if (!user) {
+      res.send('Error in feed');
+    } else {
+      res.send(user);
+    }
+  } catch (err) {
+    res.send(`Error message => ${err}`);
+  }
+});
+
 app.post('/signup', async (req, res) => {
   try {
     const user = new User(req.body);
