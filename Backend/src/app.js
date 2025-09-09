@@ -4,21 +4,15 @@ const { adminAuth, userAuth } = require('../middleware/auth.js');
 const { connectDB } = require('../config/database.js');
 const User = require('../model/user.js');
 
+app.use(express.json());
+
 app.post('/signup', async (req, res) => {
   try {
-    const user = new User({
-      firstName: 'Mohammed',
-      lastName: 'Muzammil',
-      emailId: 'zamil62709@gmail.com',
-      password: 'anoioqe',
-      age: 20,
-      gender: 'male',
-    });
-
+    const user = new User(req.body);
     await user.save();
     res.send('User Added to DB sucessfully');
   } catch (err) {
-    console.log(`Error message => ${err}`);
+    res.send(`Error message => ${err}`);
   }
 });
 
