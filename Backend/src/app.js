@@ -17,16 +17,32 @@ app.use('/deleteuser', async (req, res) => {
 });
 
 //update user specific detail
-app.patch('/updateuser', async (req, res) => {
-  const userId = req.body.userId;
+app.patch('/updateuser/:userId', async (req, res) => {
+  const userId = req.params?.userId;
   const data = req.body;
-  const ans = await User.findByIdAndUpdate({ _id: userId }, data, {
-    returnDocument: 'before',
-    runValidators: true,
-    returnDocument: 'after',
-  });
-  console.log(ans);
-  res.send(`User details of ${data.userId} uodated successfully! ☠️`);
+
+  try {
+    const ALLOWED_UPDATES = ['profile', 'about', 'gender', 'age', 'skills'];
+
+    const isAllowedUpdates = Object.keys(data).every((k) =>
+      ALLOWED_UPDATES.includes(k)
+    );
+    if (!isAllowedUpdates) {
+      res.status(400).send('User not Allowed to update this feild');
+    }
+    if (data.skills.length > 10) {
+      res.status(400).send('Skill not be more than 10');
+    }
+    const ans = await User.findByIdAndUpdate({ _id: userId }, data, {
+      returnDocument: 'before',
+      runValidators: true,
+      returnDocument: 'after',
+    });
+    console.log(ans);
+    res.send(`User details of ${userId} uodated successfully! ☠️`);
+  } catch (err) {
+    res.send('Update of this feild not allowed', err);
+  }
 });
 
 //Get user by email
