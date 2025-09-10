@@ -5,9 +5,11 @@ const { connectDB } = require('../config/database.js');
 const User = require('../model/user.js');
 const { signUpValidator } = require('../utils/validation.js');
 const bcrypt = require('bcrypt');
+const cookieParser = require('cookie-parser');
+const jwt = require('jsonwebtoken');
 
 app.use(express.json());
-
+app.use(cookieParser());
 //delete user by id
 app.use('/deleteuser', async (req, res) => {
   try {
@@ -75,6 +77,30 @@ app.use('/feed', async (req, res) => {
   }
 });
 
+//Profile
+app.get('/profile', async (req, res) => {
+  try {
+    const cookie = req.cookies;
+    const { token } = cookie;
+    if (!token) {
+      throw new Error('Invalid Token');
+    }
+    const decodedMessage = await jwt.verify(token, 'DevTinder@123');
+
+    const { _id } = decodedMessage;
+
+    const user = await User.findById(_id);
+    if (!user) {
+      throw new Error('user not found!');
+    }
+
+    res.send(user);
+  } catch (err) {
+    res.status(400).send({ error: err.message });
+  }
+});
+
+//user Login
 app.post('/login', async (req, res) => {
   try {
     const { emailId, password } = req.body;
@@ -85,13 +111,15 @@ app.post('/login', async (req, res) => {
       //1. verifying the match
       const isPasswordValid = await bcrypt.compare(password, user.password);
       if (isPasswordValid) {
+        const token = await jwt.sign({ _id: user._id }, 'DevTinder@123'); // creating the token using jwt.sign
+        res.cookie('token', token); //wrapping token with a cookie using res.cookie
         res.send('User successfully logged in!😄');
       } else {
-        throw new Error('password is not macthed');
+        throw new Error('password is not matched');
       }
     }
   } catch (err) {
-    res.status(400).send('Invalid emailId and password!', err);
+    res.status(400).send({ error: err.message });
   }
 });
 
