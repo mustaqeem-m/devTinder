@@ -6,6 +6,30 @@ const User = require('../model/user.js');
 
 app.use(express.json());
 
+//delete user by id
+app.use('/deleteuser', async (req, res) => {
+  try {
+    await User.findByIdAndDelete({ _id: req.body.userId });
+    res.send('user deleted successfully');
+  } catch (err) {
+    res.send(`${err}`);
+  }
+});
+
+//update user specific detail
+app.patch('/updateuser', async (req, res) => {
+  const userId = req.body.userId;
+  const data = req.body;
+  const ans = await User.findByIdAndUpdate({ _id: userId }, data, {
+    returnDocument: 'before',
+    runValidators: true,
+    returnDocument: 'after',
+  });
+  console.log(ans);
+  res.send(`User details of ${data.userId} uodated successfully! ☠️`);
+});
+
+//Get user by email
 app.use('/userbyemail', async (req, res) => {
   try {
     const user = await User.findOne({ emailId: req.body.emailId });
@@ -19,6 +43,7 @@ app.use('/userbyemail', async (req, res) => {
   }
 });
 
+//Feed by email - get all users
 app.use('/feed', async (req, res) => {
   try {
     const user = await User.find({});
@@ -32,6 +57,7 @@ app.use('/feed', async (req, res) => {
   }
 });
 
+//Signup API
 app.post('/signup', async (req, res) => {
   try {
     const user = new User(req.body);
