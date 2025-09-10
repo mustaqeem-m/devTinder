@@ -3,6 +3,8 @@ const app = express();
 const { adminAuth, userAuth } = require('../middleware/auth.js');
 const { connectDB } = require('../config/database.js');
 const User = require('../model/user.js');
+const { signUpValidator } = require('../utils/validation.js');
+const bcrypt = require('bcrypt');
 
 app.use(express.json());
 
@@ -73,10 +75,44 @@ app.use('/feed', async (req, res) => {
   }
 });
 
+app.post('/login', async (req, res) => {
+  try {
+    const { emailId, password } = req.body;
+    const user = await User.findOne({ emailId: emailId });
+    if (!user) {
+      throw new Error('User not found!');
+    } else {
+      //1. verifying the match
+      const isPasswordValid = await bcrypt.compare(password, user.password);
+      if (isPasswordValid) {
+        res.send('User successfully logged in!😄');
+      } else {
+        throw new Error('password is not macthed');
+      }
+    }
+  } catch (err) {
+    res.status(400).send('Invalid emailId and password!', err);
+  }
+});
+
 //Signup API
 app.post('/signup', async (req, res) => {
   try {
-    const user = new User(req.body);
+    //1. validation of data from req.body
+    signUpValidator(req);
+    const { firstName, lastName, emailId, password } = req.body;
+
+    //2. Encrypt the password
+    const passwordHash = await bcrypt.hash(password, 10);
+    console.log(passwordHash);
+
+    //3.Create the new instance of user model
+    const user = new User({
+      firstName,
+      lastName,
+      emailId,
+      password: passwordHash,
+    });
     await user.save();
     res.send('User Added to DB sucessfully');
   } catch (err) {
