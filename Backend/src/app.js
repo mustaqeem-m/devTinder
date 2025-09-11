@@ -1,6 +1,6 @@
 const express = require('express');
 const app = express();
-const { adminAuth, userAuth } = require('../middleware/auth.js');
+const { userAuth } = require('../middleware/auth.js');
 const { connectDB } = require('../config/database.js');
 const User = require('../model/user.js');
 const { signUpValidator } = require('../utils/validation.js');
@@ -21,7 +21,7 @@ app.use('/deleteuser', async (req, res) => {
 });
 
 //update user specific detail
-app.patch('/updateuser/:userId', async (req, res) => {
+app.patch('/updateuser/:userId', userAuth, async (req, res) => {
   const userId = req.params?.userId;
   const data = req.body;
 
@@ -42,7 +42,6 @@ app.patch('/updateuser/:userId', async (req, res) => {
       runValidators: true,
       returnDocument: 'after',
     });
-    console.log(ans);
     res.send(`User details of ${userId} uodated successfully! ☠️`);
   } catch (err) {
     res.send('Update of this feild not allowed', err);
@@ -78,25 +77,27 @@ app.use('/feed', async (req, res) => {
 });
 
 //Profile
-app.get('/profile', async (req, res) => {
+app.get('/profile', userAuth, async (req, res) => {
   try {
-    const cookie = req.cookies;
-    const { token } = cookie;
-    if (!token) {
-      throw new Error('Invalid Token');
-    }
-    const decodedMessage = await jwt.verify(token, 'DevTinder@123');
-
-    const { _id } = decodedMessage;
-
-    const user = await User.findById(_id);
+    const user = req.user;
     if (!user) {
       throw new Error('user not found!');
     }
-
     res.send(user);
   } catch (err) {
     res.status(400).send({ error: err.message });
+  }
+});
+
+//Send connection request
+app.post('/sendconnectionreq', userAuth, async (req, res) => {
+  try {
+    const user = req.user;
+    res.send(
+      `Connection request by user : ${user.firstName} send successfully!`
+    );
+  } catch (err) {
+    res.status(400).send({ Error: err.message });
   }
 });
 
@@ -109,10 +110,14 @@ app.post('/login', async (req, res) => {
       throw new Error('User not found!');
     } else {
       //1. verifying the match
-      const isPasswordValid = await bcrypt.compare(password, user.password);
+      const isPasswordValid = await user.validatePass(password);
       if (isPasswordValid) {
-        const token = await jwt.sign({ _id: user._id }, 'DevTinder@123'); // creating the token using jwt.sign
-        res.cookie('token', token); //wrapping token with a cookie using res.cookie
+        //! 1.creating token
+        const token = await user.getJwt(); // creating the token using jwt.sign
+        //! 2.wrapping it up inside cookie
+        res.cookie('token', token, {
+          expires: new Date(Date.now() + 8 * 3600000),
+        }); //wrapping token with a cookie using res.cookie
         res.send('User successfully logged in!😄');
       } else {
         throw new Error('password is not matched');
@@ -132,7 +137,6 @@ app.post('/signup', async (req, res) => {
 
     //2. Encrypt the password
     const passwordHash = await bcrypt.hash(password, 10);
-    console.log(passwordHash);
 
     //3.Create the new instance of user model
     const user = new User({
