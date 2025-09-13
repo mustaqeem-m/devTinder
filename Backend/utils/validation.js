@@ -12,6 +12,28 @@ const signUpValidator = (req) => {
   }
 };
 
+const validateEditProfileData = (data) => {
+  const ALLOWED_UPDATES = [
+    'firstName',
+    'lastName',
+    'emailId',
+    'profile',
+    'about',
+    'gender',
+    'age',
+    'skills',
+  ];
+
+  const isAllowedUpdates = Object.keys(data).every((k) =>
+    ALLOWED_UPDATES.includes(k)
+  );
+
+  return isAllowedUpdates;
+};
+
+const updatePassValidator = (data) => {};
+
 module.exports = {
   signUpValidator,
+  validateEditProfileData,
 };
