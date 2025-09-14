@@ -25,7 +25,7 @@ authRouter.post('/login', async (req, res) => {
         res.cookie('token', token, {
           expires: new Date(Date.now() + 8 * 3600000),
         }); //wrapping token with a cookie using res.cookie
-        res.send('User successfully logged in!😄');
+        res.json({ message: 'User successfully logged in!😄', data: user });
       } else {
         throw new Error('password is not matched');
       }

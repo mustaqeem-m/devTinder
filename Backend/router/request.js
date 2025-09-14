@@ -1,6 +1,9 @@
 const express = require('express');
 const requestRouter = express.Router();
 const { userAuth } = require('../middleware/auth.js');
+const ConnectionRequest = require('../model/request');
+const { default: isFQDN } = require('validator/lib/isFQDN.js');
+const user = require('../model/user.js');
 
 //Send connection request
 requestRouter.post('/sendconnectionreq', userAuth, async (req, res) => {
@@ -79,5 +82,60 @@ requestRouter.use('/feed', async (req, res) => {
     res.send(`Error message => ${err}`);
   }
 });
+
+// TODO creating a API for POST /request/send/:status/:userId
+requestRouter.patch(
+  '/request/send/:status/:userId',
+  userAuth,
+  async (req, res) => {
+    try {
+      const fromUserId = req.user._id;
+      const toUserId = req.params.userId;
+      const status = req.params.status;
+
+      //validation check
+      // if (String(fromUserId) === String(toUserId)) {
+      //   return res
+      //     .status(400)
+      //     .send('Your Id and receiver User Id are not meant to be same');
+      // }
+      const IdCheck = await user.findById(toUserId);
+      if (!IdCheck) {
+        return res
+          .status(400)
+          .send('Invalid UserID , User not found with this Id');
+      }
+
+      const AllowedStatus = ['ignored', 'interested'];
+      if (!AllowedStatus.includes(status)) {
+        return res.status(400).send('Invalid Status');
+      }
+      //Duplicate Request check
+      const duplicateReq = await ConnectionRequest.findOne({
+        $or: [
+          { fromUserId, toUserId },
+          { fromUserId: toUserId, toUserId: fromUserId },
+        ],
+      });
+      if (duplicateReq) {
+        return res.status(400).send('connection request already exists!');
+      }
+      const connectionRequest = new ConnectionRequest({
+        fromUserId,
+        toUserId,
+        status,
+      });
+      await connectionRequest.save();
+      res.status(200).json({
+        message: `${req.user.firstName} ${
+          status == 'ignored' ? 'ignored' : 'is interested in'
+        } ${IdCheck.firstName}`,
+        data: connectionRequest,
+      });
+    } catch (err) {
+      res.status(400).send({ Error: err.message });
+    }
+  }
+);
 
 module.exports = requestRouter;
