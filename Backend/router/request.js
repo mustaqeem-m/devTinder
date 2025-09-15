@@ -83,8 +83,8 @@ requestRouter.use('/feed', async (req, res) => {
   }
 });
 
-// TODO creating a API for POST /request/send/:status/:userId
-requestRouter.patch(
+// Sender requests
+requestRouter.post(
   '/request/send/:status/:userId',
   userAuth,
   async (req, res) => {
@@ -131,6 +131,43 @@ requestRouter.patch(
           status == 'ignored' ? 'ignored' : 'is interested in'
         } ${IdCheck.firstName}`,
         data: connectionRequest,
+      });
+    } catch (err) {
+      res.status(400).send({ Error: err.message });
+    }
+  }
+);
+
+//Receiver requests
+requestRouter.post(
+  '/request/review/:status/:requestId',
+  userAuth,
+  async (req, res) => {
+    try {
+      //toUserId === loggedInUser
+      const loggedInUser = req.user;
+      //validate status
+      const AllowedStatus = ['accepted', 'rejected'];
+      const { status, requestId } = req.params;
+      if (!AllowedStatus.includes(status)) {
+        return res.status(400).send('Invalid status type');
+      }
+      //status must be interested if its ignored not be here
+      //validate requestId (fromUserId)
+      const connectionRequest = await ConnectionRequest.findOne({
+        _id: requestId,
+        toUserId: loggedInUser._id,
+        status: 'interested',
+      });
+      if (!connectionRequest) {
+        return res.status(400).send('Connection request not found!');
+      }
+
+      connectionRequest.status = status;
+      const data = await connectionRequest.save();
+      res.send({
+        message: `Connection Request ${status} successfully`,
+        data: data,
       });
     } catch (err) {
       res.status(400).send({ Error: err.message });

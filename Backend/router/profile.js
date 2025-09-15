@@ -31,10 +31,6 @@ profileRouter.patch('/profile/edit', userAuth, async (req, res) => {
       res.status(400).send('Invalid Edit Request');
     }
 
-    req.body.forEach((feild) => {
-      user[feild] = req.body.feild;
-    });
-
     const ans = await User.findByIdAndUpdate({ _id: user._id }, data, {
       returnDocument: 'before',
       runValidators: true,
