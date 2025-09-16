@@ -1,15 +1,29 @@
 import React from 'react';
 import { useSelector } from 'react-redux';
+import { Link, useNavigate } from 'react-router-dom';
+import { BASE_URL } from '../utils/constants';
+import axios from 'axios';
 
 const Navbar = () => {
   const user = useSelector((store) => store.user);
-  console.log(user);
+  const navigate = useNavigate();
+
+  const handleLogout = async () => {
+    try {
+      const res = await axios.post(BASE_URL + 'logout');
+      navigate('/login');
+    } catch (err) {
+      console.log(err);
+    }
+  };
 
   return (
     <div>
       <div className="navbar bg-base-300 shadow-sm">
         <div className="flex-1">
-          <a className="btn btn-ghost text-xl bg-slate-400">🧑‍💻 DevTinder</a>
+          <Link to="/" className="btn btn-ghost text-xl bg-slate-400">
+            🧑‍💻 DevTinder
+          </Link>
         </div>
         <div className="flex gap-2">
           <p className="mt-2">Welcome {user.firstName}</p>
@@ -30,16 +44,16 @@ const Navbar = () => {
               className="menu menu-sm dropdown-content bg-base-100 rounded-box z-1 mt-3 w-52 p-2 shadow"
             >
               <li>
-                <a className="justify-between">
+                <Link to="/profile" className="justify-between">
                   Profile
                   <span className="badge">New</span>
-                </a>
+                </Link>
               </li>
               <li>
                 <a>Settings</a>
               </li>
               <li>
-                <a>Logout</a>
+                <button onClick={handleLogout}>Logout</button>
               </li>
             </ul>
           </div>

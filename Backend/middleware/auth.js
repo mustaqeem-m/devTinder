@@ -8,7 +8,9 @@ const userAuth = async (req, res, next) => {
     const cookie = req.cookies;
     const { token } = cookie;
     if (!token) {
-      res.send('token is not valid!!');
+      res
+        .status(401)
+        .send('Login session expired, please login again to contiue!');
     }
     //validate the token
     const decodedObj = await jwt.verify(token, 'DevTinder@123');
