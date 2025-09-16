@@ -7,7 +7,14 @@ const { signUpValidator } = require('../utils/validation.js');
 const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
+const cors = require('cors');
 
+app.use(
+  cors({
+    origin: 'http://localhost:5173', //allow only this frontend
+    credentials: true, //allow cookies/auth/headers
+  })
+);
 app.use(express.json());
 app.use(cookieParser());
 
