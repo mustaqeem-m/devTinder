@@ -27,11 +27,11 @@ authRouter.post('/login', async (req, res) => {
         }); //wrapping token with a cookie using res.cookie
         res.json(user);
       } else {
-        throw new Error('password is not matched');
+        throw new Error('Invalid credentials');
       }
     }
   } catch (err) {
-    res.status(400).send({ error: err.message });
+    res.status(401).send({ error: err.message });
   }
 });
 

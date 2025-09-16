@@ -15,3 +15,10 @@
 - in FrontEnd to tackle cors conflict axios.defaults.withCredeintials= true
 - Used redux store -> Installed redux toolkit and react-redux
 - configureStore({}) -> provider -> createSlice({}) ->add slice reducer to store
+- Add reduxDev tool to chrome
+- Login and see if the data is coming properly in the store
+- navbar should update ASA the user logs in
+- Block other route access without login
+- If the token is not present redirect user to login page
+- Logout
+- profile

@@ -12,6 +12,7 @@ axios.defaults.withCredentials = true;
 const Login = () => {
   const [emailId, setEmailId] = useState('');
   const [password, setPassword] = useState('');
+  const [error, setError] = useState('');
   const dispatch = useDispatch();
   const navigate = useNavigate();
 
@@ -28,6 +29,7 @@ const Login = () => {
       dispatch(addUser(res.data));
       return navigate('/feed');
     } catch (err) {
+      setError(err.response.data.error);
       console.log(err);
     }
   };
@@ -62,6 +64,7 @@ const Login = () => {
               />
             </fieldset>
           </div>
+          <p className="text-red-500 font-semibold">{error}</p>
           <div className="card-actions justify-end">
             <button className="btn btn-primary mx-auto" onClick={handleLogin}>
               Login
