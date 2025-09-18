@@ -24,7 +24,7 @@ const Navbar = () => {
     <div>
       <div className="navbar bg-base-300 shadow-sm">
         <div className="flex-1">
-          <Link to="/" className="btn btn-ghost text-xl bg-slate-400">
+          <Link to="/feed" className="btn btn-ghost text-xl bg-slate-400">
             🧑‍💻 DevTinder
           </Link>
         </div>

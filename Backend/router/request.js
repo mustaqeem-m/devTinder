@@ -175,4 +175,34 @@ requestRouter.post(
   }
 );
 
+//delete exiting connections (unfriend)
+requestRouter.delete(
+  '/request/review/deleteConnection/:requestId',
+  userAuth,
+  async (req, res) => {
+    //1. validate user
+    //2. find corresponding request from DB
+    //3. delete that req that make the connection delete
+    try {
+      const loggedInUser = req.user;
+      const requestId = req.params.requestId;
+      const deleteReq = await ConnectionRequest.findOneAndDelete({
+        _id: requestId,
+        status: 'accepted',
+      });
+
+      if (!deleteReq) {
+        res.statu(400).send('Connection Not found to delete!');
+      }
+
+      res.json(
+        { message: 'Connection Deleted Successfully' },
+        { data: deleteReq }
+      );
+    } catch (err) {
+      res.status(400).json({ Error: err.message });
+    }
+  }
+);
+
 module.exports = requestRouter;

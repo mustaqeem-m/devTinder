@@ -4,7 +4,7 @@ import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
 import { addFeed } from '../utils/slice/FeedSlice.jsx';
 import { useNavigate } from 'react-router-dom';
-import UserFeed from './UserFeed';
+import UserFeed from './UserCard.jsx';
 
 const Feed = () => {
   const dispatch = useDispatch();
@@ -16,7 +16,6 @@ const Feed = () => {
     try {
       if (feed) return;
       const res = await axios.get(BASE_URL + '/user/feed');
-      console.log(res.data);
       dispatch(addFeed(res.data));
     } catch {
       navigate('/error');
@@ -28,9 +27,11 @@ const Feed = () => {
   }, []);
 
   return (
-    <div>
-      <UserFeed />
-    </div>
+    feed && (
+      <div className="flex justify-center mx-auto mt-10">
+        <UserFeed user={feed[0]} />
+      </div>
+    )
   );
 };
 

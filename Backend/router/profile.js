@@ -31,17 +31,13 @@ profileRouter.patch('/profile/edit', userAuth, async (req, res) => {
       res.status(400).send('Invalid Edit Request');
     }
 
-    const ans = await User.findByIdAndUpdate({ _id: user._id }, data, {
+    const response = await User.findByIdAndUpdate({ _id: user._id }, data, {
       returnDocument: 'before',
       runValidators: true,
       returnDocument: 'after',
     });
-    console.log(ans);
-    res.send(
-      `User details of ${
-        data.firstName || user.firstName
-      } bhai updated successfully! ☠️`
-    );
+
+    res.send(response);
   } catch (err) {
     res.status(400).send({ Error: err.message });
   }

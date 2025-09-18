@@ -22,3 +22,5 @@
 - If the token is not present redirect user to login page
 - Logout
 - profile
+- get the feed data from the BE and add it to the store
+- build the user card on the feed Page
