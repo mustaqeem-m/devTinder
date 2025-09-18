@@ -4,6 +4,10 @@ import { Link, useNavigate } from 'react-router-dom';
 import { BASE_URL } from '../utils/constants';
 import axios from 'axios';
 import { removeUser } from '../utils/slice/UserSlice';
+import Connections from './Connections';
+import { removeRequests } from '../utils/slice/requestsSlice';
+import { removeConnections } from '../utils/slice/connectionSlice';
+import { clearFeed } from '../utils/slice/feedSlice';
 
 const Navbar = () => {
   const user = useSelector((store) => store.user);
@@ -15,6 +19,9 @@ const Navbar = () => {
       await axios.post(BASE_URL + '/logout');
       navigate('/login');
       dispatch(removeUser());
+      dispatch(clearFeed());
+      dispatch(removeRequests());
+      dispatch(removeConnections());
     } catch (err) {
       console.log(err);
     }
@@ -53,11 +60,14 @@ const Navbar = () => {
                 <li>
                   <Link to="/profile" className="justify-between">
                     Profile
-                    <span className="badge">New</span>
                   </Link>
                 </li>
                 <li>
-                  <a>Settings</a>
+                  <Link to="/conns">Connentions</Link>
+                </li>
+
+                <li>
+                  <Link to="/reqs">Requests</Link>
                 </li>
                 <li>
                   <button onClick={handleLogout}>Logout</button>

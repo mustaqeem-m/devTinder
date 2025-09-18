@@ -9,6 +9,7 @@ import UserFeed from './UserCard.jsx';
 const Feed = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
+  const userId = useSelector((store) => store.user?._id);
 
   const feed = useSelector((store) => store.feed);
 
@@ -23,13 +24,16 @@ const Feed = () => {
   };
 
   useEffect(() => {
-    getFeed();
-  }, []);
+    if (userId) getFeed();
+  }, [userId]);
+
+  // if (!feed) return;
 
   return (
     feed && (
       <div className="flex justify-center mx-auto mt-10">
         <UserFeed user={feed[0]} />
+        {/* <UserCard user={{ firstName, lastName, age, gender, about, profile }} /> */}
       </div>
     )
   );

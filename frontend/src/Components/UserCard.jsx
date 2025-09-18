@@ -11,6 +11,7 @@ const UserCard = (userData) => {
         </figure>
         <div className="card-body bg-slate-900 rounded-2xl">
           <h2 className="card-title">{firstName + ' ' + lastName}</h2>
+
           {age && gender && <p>{age + ' ' + gender}</p>}
           <p>
             {about}

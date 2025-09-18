@@ -11,7 +11,6 @@ const EditProfile = ({ user }) => {
   const [firstName, setFirstName] = useState(user.firstName);
   const [lastName, setLastName] = useState(user.lastName);
   const [age, setAge] = useState(user.age || 0);
-  const [skills, setSkills] = useState(user.skills);
   const [about, setAbout] = useState(user.about);
   const [profile, setProfile] = useState(user.profile);
   const [gender, setGender] = useState(user.gender);
@@ -92,9 +91,9 @@ const EditProfile = ({ user }) => {
                   onChange={(e) => setGender(e.target.value)}
                 >
                   <option value="">Select gender</option>
-                  <option value="Male">Male</option>
-                  <option value="Female">Female</option>
-                  <option value="Other">Other</option>
+                  <option value="male">male</option>
+                  <option value="female">female</option>
+                  <option value="Others">Others</option>
                 </select>
 
                 <legend className="fieldset-legend mt-1">Photo: </legend>
@@ -112,6 +111,9 @@ const EditProfile = ({ user }) => {
                 <textarea
                   className="textarea h-24"
                   placeholder="About me"
+                  onChange={(e) => {
+                    setAbout(e.target.value);
+                  }}
                 ></textarea>
               </fieldset>
             </div>

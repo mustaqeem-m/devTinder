@@ -20,7 +20,9 @@
 - navbar should update ASA the user logs in
 - Block other route access without login
 - If the token is not present redirect user to login page
-- Logout
-- profile
+- Feat -> Logout
+- Feat -> profile
 - get the feed data from the BE and add it to the store
 - build the user card on the feed Page
+- Build userCard and profile page
+- made save button functional and sync with backend
