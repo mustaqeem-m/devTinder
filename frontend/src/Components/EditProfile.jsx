@@ -7,7 +7,6 @@ import { addUser } from '../utils/slice/UserSlice';
 import { BASE_URL } from './../utils/constants';
 
 const EditProfile = ({ user }) => {
-  // console.log(user);
   const [firstName, setFirstName] = useState(user.firstName);
   const [lastName, setLastName] = useState(user.lastName);
   const [age, setAge] = useState(user.age || 0);

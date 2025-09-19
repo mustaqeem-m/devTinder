@@ -26,3 +26,6 @@
 - build the user card on the feed Page
 - Build userCard and profile page
 - made save button functional and sync with backend
+- created slices for connections ans requests
+- feature -> accept and reject comnnections requests received
+-

@@ -14,7 +14,8 @@ userRouter.get('/user/requests/recieved', userAuth, async (req, res) => {
       toUserId: loggedInUser._id,
       status: 'interested',
     }).populate('fromUserId', USER_SAFE_DATA);
-    const data = pendingReq.map(({ fromUserId }) => fromUserId);
+    // const data = pendingReq.map(({ fromUserId }) => fromUserId);
+    const data = pendingReq.map((pendingReq) => pendingReq);
     res.json({
       message: `${
         pendingReq.length === 0
