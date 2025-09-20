@@ -9,7 +9,7 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
       index: true,
-      minLength: 5,
+      minLength: 4,
       maxLength: 20,
     },
     lastName: {
@@ -51,11 +51,11 @@ const userSchema = new mongoose.Schema(
       type: String,
       default:
         'https://cdn.pixabay.com/photo/2015/10/05/22/37/blank-profile-picture-973460_1280.png',
-      validate(value) {
-        if (!validator.isURL(value)) {
-          throw new Error('photo url invalid');
-        }
-      },
+      // validate(value) {
+      //   if (!validator.isURL(value)) {
+      //     throw new Error('photo url invalid');
+      //   }
+      // },
     },
     skills: {
       type: [String],

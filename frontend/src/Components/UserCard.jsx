@@ -1,8 +1,24 @@
+import axios from 'axios';
 import React from 'react';
+import { refreshFeed } from '../utils/slice/FeedSlice.jsx';
+import { BASE_URL } from '../utils/constants';
+import { useDispatch } from 'react-redux';
 
 const UserCard = (userData) => {
-  const { firstName, lastName, profile, skills, about, age, gender } =
+  const dispatch = useDispatch();
+  const { _id, firstName, lastName, profile, skills, about, age, gender } =
     userData.user || {};
+
+  const handleUsers = async (status, _id) => {
+    try {
+      const res = await axios.post(
+        BASE_URL + '/request/send/' + status + '/' + _id
+      );
+      dispatch(refreshFeed(_id));
+    } catch (err) {
+      console.log(err);
+    }
+  };
   return (
     <div>
       <div className="card bg-black-700 w-96 shadow-sm ">
@@ -18,8 +34,18 @@ const UserCard = (userData) => {
             {skills}
           </p>
           <div className="card-actions justify-center gap-5 ">
-            <button className="btn btn-primary bg-red-500">Ignore</button>
-            <button className="btn btn-primary bg-green-600">Interested</button>
+            <button
+              className="btn btn-primary bg-red-500"
+              onClick={() => handleUsers('ignored', _id)}
+            >
+              Ignore
+            </button>
+            <button
+              className="btn btn-primary bg-green-600"
+              onClick={() => handleUsers('interested', _id)}
+            >
+              Interested
+            </button>
           </div>
         </div>
       </div>

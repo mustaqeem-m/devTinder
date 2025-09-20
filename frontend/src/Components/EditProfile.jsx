@@ -5,6 +5,7 @@ import UserCard from './UserCard';
 import axios from 'axios';
 import { addUser } from '../utils/slice/UserSlice';
 import { BASE_URL } from './../utils/constants';
+import Profile from './Profile';
 
 const EditProfile = ({ user }) => {
   const [firstName, setFirstName] = useState(user.firstName);
@@ -34,7 +35,7 @@ const EditProfile = ({ user }) => {
         },
         { withCredentials: true }
       );
-      dispatch(addUser(updatedProfile));
+      dispatch(addUser(updatedProfile.data));
       setShowToast(true);
       setTimeout(() => {
         setShowToast(false);
@@ -48,7 +49,7 @@ const EditProfile = ({ user }) => {
       <div className="flex justify-center my-7">
         <div className="card card-border bg-base-300 w-96 ">
           <div className="card-body">
-            <h2 className="card-title mx-auto">Login</h2>
+            <h2 className="card-title mx-auto">Profile</h2>
             <div>
               <fieldset className="fieldset">
                 <legend className="fieldset-legend mt-1">FirstName: </legend>

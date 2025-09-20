@@ -35,7 +35,6 @@ const Requests = () => {
       console.log(err.response.data.Error);
     }
   };
-  console.log(requests);
 
   useEffect(() => {
     if (!requests) {

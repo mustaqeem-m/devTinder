@@ -18,7 +18,8 @@ const Feed = () => {
       if (feed) return;
       const res = await axios.get(BASE_URL + '/user/feed');
       dispatch(addFeed(res.data));
-    } catch {
+    } catch (err) {
+      console.log(err);
       navigate('/error');
     }
   };
@@ -27,7 +28,14 @@ const Feed = () => {
     if (userId) getFeed();
   }, [userId]);
 
-  // if (!feed) return;
+  if (!feed) return;
+
+  if (feed.length === 0)
+    return (
+      <h2 className="text-2xl justify-center m-10 flex font-semibold">
+        Your connections is full!
+      </h2>
+    );
 
   return (
     feed && (
