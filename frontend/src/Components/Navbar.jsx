@@ -7,7 +7,7 @@ import { removeUser } from '../utils/slice/UserSlice';
 import Connections from './Connections';
 import { removeRequests } from '../utils/slice/requestsSlice';
 import { removeConnections } from '../utils/slice/connectionSlice';
-import { clearFeed } from '../utils/slice/feedSlice';
+import { clearFeed } from '../utils/slice/FeedSlice';
 
 const Navbar = () => {
   const user = useSelector((store) => store.user);
