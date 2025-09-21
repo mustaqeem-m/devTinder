@@ -8,7 +8,7 @@ import { Provider } from 'react-redux';
 import Feed from './Components/Feed.jsx';
 import Error from './Components/Error.jsx';
 import Connections from './Components/Connections.jsx';
-import Requests from './Components/requests.jsx';
+import Requests from './Components/Requests.jsx';
 
 function App() {
   return (
