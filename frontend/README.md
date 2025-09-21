@@ -28,4 +28,25 @@
 - made save button functional and sync with backend
 - created slices for connections ans requests
 - feature -> accept and reject comnnections requests received
--
+
+## Season-03 Deployment
+
+### frontend
+
+- SignUp on AWS
+- Launch instance
+- chmod 400 '<secret-key>.pem'
+- ssh ~i ........
+- install node version that matches local system node verison
+- git clone
+- FrontEnd deployment
+  - npm i
+  - npm run build
+  - sudo apt update
+  - sodo apt install nginx
+  - sudo systemctl start nginx
+  - sudo systemctl enable nginx
+  - copy code from build to nginx's http server
+  - sudo scp -r dist/\* /var/www/html/
+  - since out html port 80 is blocked by html
+  - instances -> security -> security groups -> create new security group with port 80 and ip 0.0.0.0/0
