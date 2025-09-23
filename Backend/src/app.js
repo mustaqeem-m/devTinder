@@ -8,6 +8,7 @@ const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+require('dotenv').config({ path: __dirname + '/../../.env' }); // adjust path to your setup
 
 app.use(
   cors({
@@ -31,7 +32,7 @@ app.use('/', userRouter);
 connectDB()
   .then(() => {
     console.log('Database Connection Successfully established!');
-    app.listen(2222, () => {
+    app.listen(process.env.PORT, () => {
       console.log('server is listening to the port 2222');
     });
   })

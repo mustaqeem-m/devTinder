@@ -4,6 +4,7 @@ const { userAuth } = require('../middleware/auth.js');
 const ConnectionRequest = require('../model/request');
 const { default: isFQDN } = require('validator/lib/isFQDN.js');
 const user = require('../model/user.js');
+const sendEmail = require('../utils/sendEmail');
 
 //Send connection request
 requestRouter.post('/sendconnectionreq', userAuth, async (req, res) => {
@@ -126,6 +127,35 @@ requestRouter.post(
         status,
       });
       await connectionRequest.save();
+
+      //ses
+      const subject = `${req.user.firstName} ${
+        status === 'ignored' ? 'ignored' : 'is interested in'
+      } ${IdCheck.firstName}`;
+      const html = `<p>${req.user.firstName} ${
+        status === 'ignored' ? 'ignored' : 'is interested in'
+      } ${IdCheck.firstName}</p>
+              <p>Visit their profile: https://devstinder.online/user/${
+                req.user.id
+              }</p>`;
+      const text = `${req.user.firstName} ${
+        status === 'ignored' ? 'ignored' : 'is interested in'
+      } ${IdCheck.firstName}`;
+
+      const recipient = IdCheck.emailId || 'mmmustaqeem1910@gmail.com'; // fallback for testing
+
+      try {
+        const emailRes = await sendEmail.run({
+          to: recipient,
+          subject,
+          html,
+          text,
+          // from: 'no-reply@devstinder.online' // optional: will default to DEFAULT_FROM
+        });
+        console.log('Email sent, MessageId:', emailRes.messageId);
+      } catch (err) {
+        console.error('Failed to send email:', err.message || err);
+      }
       res.status(200).json({
         message: `${req.user.firstName} ${
           status == 'ignored' ? 'ignored' : 'is interested in'

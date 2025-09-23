@@ -47,3 +47,19 @@ Domain Name -> devTinder.com => 13.48.59.148
 
 frontend -> http://devTinder.com
 backend -> http://devTinder.com:7777 => http://devTinder.com/api
+
+### hosting and domain name
+
+- purchasing a domain name in bigrock -> devstinder.online
+- signup in cloudflare and add new domain name
+- changing the nameservers in from bigrock -> cloudflare => letting cloudflare handles all DNS traffic of our domain
+- creating DNS record type A and type CNAME
+- Enable full SSL for domain , by configure server EC2 to provide SSL certificate
+
+## sending Email using amazon SES
+
+- create a IAM user
+- give amazon SES acess
+- create a identity -> in amazon SES (both domain and email identity)
+- verify domain identity using CNAME provided by Amazon SES and update record in Cloudflare using this
+-

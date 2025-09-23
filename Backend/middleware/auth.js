@@ -13,7 +13,7 @@ const userAuth = async (req, res, next) => {
         .send('Login session expired, please login again to contiue!');
     }
     //validate the token
-    const decodedObj = await jwt.verify(token, 'DevTinder@123');
+    const decodedObj = await jwt.verify(token, process.env.JWT_SECRET);
     const { _id } = decodedObj;
     //find the corresponding user of the token
     const user = await User.findById(_id);
