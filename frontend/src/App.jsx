@@ -9,6 +9,8 @@ import Feed from './Components/Feed.jsx';
 import Error from './Components/Error.jsx';
 import Connections from './Components/Connections.jsx';
 import Requests from './Components/Requests.jsx';
+import Chat from './Components/Chat.jsx';
+import SwipeDeck from './Components/SwipeDeck.jsx';
 
 function App() {
   return (
@@ -21,8 +23,10 @@ function App() {
               <Route path="/login" element={<Login />} />
               <Route path="/profile" element={<Profile />} />
               <Route path="/conns" element={<Connections />} />
+              <Route path="/discover" element={<SwipeDeck />} />
               <Route path="/reqs" element={<Requests />} />
               <Route path="/error" element={<Error />} />
+              <Route path="/chat/:targetUserId" element={<Chat />}></Route>
             </Route>
           </Routes>
         </BrowserRouter>

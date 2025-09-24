@@ -8,8 +8,10 @@ const bcrypt = require('bcrypt');
 const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
+const http = require('http');
 require('dotenv').config({ path: __dirname + '/../../.env' }); // adjust path to your setup
 require('../utils/cronJobs.js');
+const { InitializeSocket } = require('../utils/socket.js');
 
 app.use(
   cors({
@@ -30,10 +32,13 @@ app.use('/', profileRouter);
 app.use('/', requestRouter);
 app.use('/', userRouter);
 
+const server = http.createServer(app);
+InitializeSocket(server);
+
 connectDB()
   .then(() => {
     console.log('Database Connection Successfully established!');
-    app.listen(process.env.PORT, () => {
+    server.listen(process.env.PORT, () => {
       console.log('server is listening to the port 2222');
     });
   })

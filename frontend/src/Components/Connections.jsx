@@ -3,6 +3,7 @@ import React, { useEffect } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { BASE_URL } from '../utils/constants';
 import { addConnections } from '../utils/slice/connectionSlice';
+import { Link } from 'react-router-dom';
 
 const Connections = () => {
   const dispatch = useDispatch();
@@ -60,23 +61,35 @@ const Connections = () => {
             <p className="list-col-wrap text-xs">{about}</p>
 
             {/* Actions */}
-            <button className="btn btn-square btn-ghost" title="Message">
-              <svg
-                className="size-[1.2em]"
-                xmlns="http://www.w3.org/2000/svg"
-                viewBox="0 0 24 24"
-              >
-                <g
-                  strokeLinejoin="round"
-                  strokeLinecap="round"
-                  strokeWidth="2"
-                  fill="none"
-                  stroke="currentColor"
+            <Link to={`/chat/${_id}`}>
+              <button className="btn btn-square btn-ghost" title="Message">
+                <svg
+                  className="size-[1.2em]"
+                  xmlns="http://www.w3.org/2000/svg"
+                  viewBox="0 0 24 24"
+                  role="img"
+                  aria-labelledby="chatIconTitle"
                 >
-                  <path d="M6 3L20 12 6 21 6 3z"></path>
-                </g>
-              </svg>
-            </button>
+                  <title id="chatIconTitle">Chat icon</title>
+                  <g
+                    strokeLinejoin="round"
+                    strokeLinecap="round"
+                    strokeWidth="2"
+                    fill="none"
+                    stroke="currentColor"
+                  >
+                    <path d="M21 15a2 2 0 0 1-2 2H8l-4 4V5a2 2 0 0 1 2-2h13a2 2 0 0 1 2 2z" />
+                  </g>
+
+                  {/* dots — filled to contrast with outline */}
+                  <g fill="currentColor" stroke="none">
+                    <circle cx="8.5" cy="10.5" r="0.9" />
+                    <circle cx="12" cy="10.5" r="0.9" />
+                    <circle cx="15.5" cy="10.5" r="0.9" />
+                  </g>
+                </svg>
+              </button>
+            </Link>
             <button className="btn btn-square btn-ghost" title="Remove">
               <svg
                 className="size-[1.2em]"

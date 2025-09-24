@@ -76,3 +76,18 @@ backend -> http://devTinder.com:7777 => http://devTinder.com/api
 - bee Queue -> a package used to send bulk emails
 - Amazon SES bulk emails
 - Make send email function dynamic
+
+## Websocket and socket.io
+
+- npm i socket.io
+- require htttp
+- in backend/app.js -> <require(http)> -> create a server <http.createServer(app)> -> listen to that server, <server.listen>
+- change app.listen to server.listen -- \*
+- create io
+  <const io = socket(server, {
+  cors: {
+  origin: 'http://localhost:5173',
+  },
+  });>
+- Accept a connection using io.on
+  <io.on('connection', (socket) => {})>
