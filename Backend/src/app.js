@@ -9,6 +9,7 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 require('dotenv').config({ path: __dirname + '/../../.env' }); // adjust path to your setup
+require('../utils/cronJobs.js');
 
 app.use(
   cors({

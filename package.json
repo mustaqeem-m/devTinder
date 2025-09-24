@@ -1,5 +1,6 @@
 {
   "dependencies": {
+    "cron": "^4.3.3",
     "dotenv": "^17.2.2"
   }
 }

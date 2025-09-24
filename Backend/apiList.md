@@ -63,3 +63,16 @@ backend -> http://devTinder.com:7777 => http://devTinder.com/api
 - create a identity -> in amazon SES (both domain and email identity)
 - verify domain identity using CNAME provided by Amazon SES and update record in Cloudflare using this
 -
+
+## Scheduling cron job in Nodejs
+
+- Installing node-cron
+- learning about cron expression syntax - crontab.guru
+- scheduling a job
+- date-fns -> a package make work with date easier
+- find all unique emailID and send a remainder of pending connection requsts of previous day
+- send Email
+- Explore queue mechanism in sending bulk emails
+- bee Queue -> a package used to send bulk emails
+- Amazon SES bulk emails
+- Make send email function dynamic
