@@ -9,14 +9,14 @@ const cookieParser = require('cookie-parser');
 const jwt = require('jsonwebtoken');
 const cors = require('cors');
 const http = require('http');
-require('dotenv').config({ path: __dirname + '/../../.env' }); // adjust path to your setup
+require('dotenv').config({ path: __dirname + '/../../.env' });
 require('../utils/cronJobs.js');
-const { InitializeSocket } = require('../utils/socket.js');
+const InitializeSocket = require('../utils/socket.js');
 
 app.use(
   cors({
-    origin: 'http://localhost:5173', //allow only this frontend
-    credentials: true, //allow cookies/auth/headers
+    origin: 'http://localhost:5173',
+    credentials: true,
   })
 );
 app.use(express.json());

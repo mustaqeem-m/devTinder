@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { BASE_URL } from '../utils/constants';
 import axios from 'axios';
 import { useDispatch, useSelector } from 'react-redux';
-import { addFeed } from '../utils/slice/FeedSlice.jsx';
+import { addFeed } from '../utils/slice/FeedSlice.js';
 import { useNavigate } from 'react-router-dom';
 import UserFeed from './UserCard.jsx';
 

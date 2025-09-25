@@ -77,7 +77,7 @@ backend -> http://devTinder.com:7777 => http://devTinder.com/api
 - Amazon SES bulk emails
 - Make send email function dynamic
 
-## Websocket and socket.io
+## Websocket and socket.io -> implemeting Chat using chat
 
 - npm i socket.io
 - require htttp

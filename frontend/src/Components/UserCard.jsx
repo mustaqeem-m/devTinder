@@ -1,6 +1,6 @@
 import axios from 'axios';
 import React from 'react';
-import { refreshFeed } from '../utils/slice/FeedSlice.jsx';
+import { refreshFeed } from '../utils/slice/FeedSlice.js';
 import { BASE_URL } from '../utils/constants';
 import { useDispatch } from 'react-redux';
 

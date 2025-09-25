@@ -5,6 +5,7 @@ const User = require('../model/user.js');
 const { validateEditProfileData } = require('../utils/validation.js');
 const validator = require('validator');
 const bcrypt = require('bcrypt');
+const { Query } = require('mongoose');
 
 //Profile
 profileRouter.get('/profile/view', userAuth, async (req, res) => {
@@ -16,6 +17,21 @@ profileRouter.get('/profile/view', userAuth, async (req, res) => {
     res.send(user);
   } catch (err) {
     res.status(400).send({ error: err.message });
+  }
+});
+
+profileRouter.get('/profile/:userId', async (req, res) => {
+  try {
+    const userId = req.params.userId;
+    const user = await User.findById(userId).select(
+      'firstName lastName userId profile'
+    );
+    if (!user) {
+      res.status(400).send('User not found with this id');
+    }
+    res.send(user);
+  } catch (err) {
+    res.status(400).send({ Error: err.message });
   }
 });
 

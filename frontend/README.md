@@ -50,3 +50,9 @@
   - sudo scp -r dist/\* /var/www/html/
   - since out html port 80 is blocked by html
   - instances -> security -> security groups -> create new security group with port 80 and ip 0.0.0.0/0
+
+## Websocket and socket.io -> implemeting Chat using chat
+
+- npm i socket.io-client
+- utils -> create socket.io config
+-

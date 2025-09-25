@@ -2,7 +2,7 @@ import React from 'react';
 import { useState } from 'react';
 import axios, { Axios } from 'axios';
 import { useDispatch } from 'react-redux';
-import UserSlice from './../utils/slice/UserSlice.jsx';
+import UserSlice from './../utils/slice/UserSlice.js';
 import { addUser } from '../utils/slice/UserSlice';
 import { useNavigate, Link } from 'react-router-dom';
 import { BASE_URL } from './../utils/constants';
