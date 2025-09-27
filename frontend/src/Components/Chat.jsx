@@ -13,12 +13,13 @@ const Chat = () => {
   const [newMessage, setNewMessage] = useState('');
   const [targetUser, setTargetUser] = useState(null);
   const fromUserId = user?._id;
-  const { firstName, profile } = user;
+  const { firstName, lastName, profile } = user;
 
   const handleSend = () => {
     const socket = createSocketConnection();
     socket.emit('sendMessage', {
       firstName,
+      lastName,
       fromUserId,
       targetUserId,
       text: newMessage,
@@ -31,22 +32,45 @@ const Chat = () => {
     setTargetUser(res.data);
   };
 
-  useEffect(() => {
-    getTargetUser(targetUserId);
-  }, []);
+  const getChat = async () => {
+    try {
+      const chat = await axios.get(BASE_URL + '/chat/' + targetUserId);
+      console.log(chat);
+      const chatMessages = chat?.data?.messages.map((msg) => {
+        return {
+          firstName: msg?.senderId?.firstName,
+          lastName: msg?.senderId?.lastName,
+          profile: msg?.profile,
+          text: msg?.text,
+          time: msg?.UpdatedAt,
+        };
+      });
+      setMessages(chatMessages);
+    } catch (err) {
+      console.log({ Error: err.message });
+    }
+  };
 
   useEffect(() => {
     if (!fromUserId) return;
     const socket = createSocketConnection();
-    socket.emit('joinChat', { firstName, fromUserId, targetUserId });
+    socket.emit('joinChat', { firstName, lastName, fromUserId, targetUserId });
 
-    socket.on('messageReceived', ({ firstName, text }) => {
-      console.log(firstName + ': ' + text);
-      setMessages((messages) => [...messages, { firstName, text }]);
+    socket.on('messageReceived', ({ firstName, lastName, text }) => {
+      console.log(firstName + lastName + ': ' + text);
+      setMessages((messages) => [...messages, { firstName, lastName, text }]);
     });
 
     return () => socket.disconnect();
-  }, [firstName, fromUserId, targetUserId]);
+  }, [firstName, lastName, fromUserId, targetUserId]);
+
+  useEffect(() => {
+    getChat();
+  }, []);
+  useEffect(() => {
+    getTargetUser(targetUserId);
+  }, []);
+
   return (
     <div className="w-3/2 mx-auto border border-gray-600 m-5 h-[70vh] flex flex-col">
       <div className="flex-1 overflow-y-scroll items-center border-gray-600 p-5 text-center">
@@ -75,7 +99,7 @@ const Chat = () => {
                     </div>
                   </div>
                   <div className="chat-header">
-                    {msg.firstName}
+                    {msg.firstName} {msg.lastName}
                     <time className="text-xs opacity-50">12:45</time>
                   </div>
                   <div className="chat-bubble">{msg.text}</div>
