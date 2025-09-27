@@ -8,7 +8,7 @@ const userAuth = async (req, res, next) => {
     const cookie = req.cookies;
     const { token } = cookie;
     if (!token) {
-      res
+      return res
         .status(401)
         .send('Login session expired, please login again to contiue!');
     }
@@ -19,11 +19,11 @@ const userAuth = async (req, res, next) => {
     const user = await User.findById(_id);
     req.user = user;
     if (!user) {
-      throw new Error('User not found');
+      return res.status(400).send('User not found');
     }
     next();
   } catch (err) {
-    res.status(400).send({ error: err.message });
+    return res.status(400).send({ error: err.message });
   }
 };
 
