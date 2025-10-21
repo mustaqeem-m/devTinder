@@ -43,9 +43,13 @@ paymentRouter.post('/payment/createOrder', userAuth, async (req, res) => {
 
     const savedPayment = await payment.save();
 
-    return res
-      .status(201)
-      .json({ ...savedPayment.toJSON(), keyId: process.env.RAZORPAY_KEYID });
+    // when responding after saving order
+    const keyId =
+      process.env.RAZORPAY_KEY_ID ||
+      process.env.RAZORPAY_KEYID ||
+      process.env.RAZORPAY_KEY ||
+      process.env.RAZORPAY_KEY_PUBLIC;
+    return res.status(201).json({ ...savedPayment.toJSON(), keyId });
   } catch (err) {
     console.error('Create order error:', err);
     if (err.statusCode === 401 || err.status === 401) {
