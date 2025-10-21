@@ -11,6 +11,7 @@ import Connections from './Components/Connections.jsx';
 import Requests from './Components/Requests.jsx';
 import Chat from './Components/Chat.jsx';
 import SwipeDeck from './Components/SwipeDeck.jsx';
+import Premium from './Components/Premium';
 
 function App() {
   return (
@@ -25,6 +26,7 @@ function App() {
               <Route path="/conns" element={<Connections />} />
               <Route path="/discover" element={<SwipeDeck />} />
               <Route path="/reqs" element={<Requests />} />
+              <Route path="/premium" element={<Premium />} />
               <Route path="/error" element={<Error />} />
               <Route path="/chat/:targetUserId" element={<Chat />}></Route>
             </Route>

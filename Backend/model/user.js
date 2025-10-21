@@ -69,7 +69,15 @@ const userSchema = new mongoose.Schema(
       type: String,
       default: 'Hey there!',
     },
+    isPremium: {
+      type: Boolean,
+      default: false,
+    },
+    memberShipType: {
+      type: String,
+    },
   },
+
   {
     timestamps: true,
   }

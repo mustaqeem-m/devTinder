@@ -8,6 +8,7 @@ import Connections from './Connections';
 import { removeRequests } from '../utils/slice/requestsSlice';
 import { removeConnections } from '../utils/slice/connectionSlice';
 import { clearFeed } from '../utils/slice/FeedSlice';
+import Premium from './Premium';
 
 const Navbar = () => {
   const user = useSelector((store) => store.user);
@@ -68,6 +69,9 @@ const Navbar = () => {
 
                 <li>
                   <Link to="/reqs">Requests</Link>
+                </li>
+                <li>
+                  <Link to="/premium">Upgrade pro</Link>
                 </li>
                 <li>
                   <button onClick={handleLogout}>Logout</button>

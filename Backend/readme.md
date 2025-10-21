@@ -91,3 +91,17 @@ backend -> http://devTinder.com:7777 => http://devTinder.com/api
   });>
 - Accept a connection using io.on
   <io.on('connection', (socket) => {})>
+
+## Razorpay payment gateway Integration
+
+- Signup on Razorpay & complex KYC
+- created a UI for premium page
+- creating an API for create order in BE
+- Intialized razorPay instance
+- Creating order on razorpay
+- create schema and model
+- saved the order in payments collection
+- make the API dynamic
+- webhookURL -> What api should razor pay call if the payment is successfull or failed
+- setUp razorpay webhook in Live URL
+-
