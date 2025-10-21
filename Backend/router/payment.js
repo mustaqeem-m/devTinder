@@ -5,22 +5,28 @@ const paymentRouter = express.Router();
 const { userAuth } = require('../middleware/auth');
 const Payment = require('../model/payment');
 const memberShipAmount = require('../utils/constants');
-// removed importing frontend BASE_URL — use server route paths only
 const crypto = require('crypto');
 const { User } = require('../model/user');
 
+// =======================
+//  CREATE ORDER
+// =======================
 paymentRouter.post('/payment/createOrder', userAuth, async (req, res) => {
   try {
     const { firstName, lastName, emailId } = req.user;
     const { memberShipType } = req.body;
 
     const amountValue = memberShipAmount[memberShipType];
-    // if (!amountValue || typeof amountValue !== 'number') {
-    //   return res.status(400).json({ error: 'Invalid memberShipType' });
-    // }
+    if (
+      typeof amountValue !== 'number' ||
+      isNaN(amountValue) ||
+      amountValue <= 0
+    ) {
+      return res.status(400).json({ error: 'Invalid memberShipType' });
+    }
 
     const order = await razorpayInstance.orders.create({
-      amount: amountValue * 100,
+      amount: amountValue * 100, // Razorpay expects amount in paise
       currency: 'INR',
       receipt: `rcpt_${Date.now()}`,
       notes: {
@@ -43,12 +49,13 @@ paymentRouter.post('/payment/createOrder', userAuth, async (req, res) => {
 
     const savedPayment = await payment.save();
 
-    // when responding after saving order
+    // send keyId to frontend
     const keyId =
       process.env.RAZORPAY_KEY_ID ||
       process.env.RAZORPAY_KEYID ||
       process.env.RAZORPAY_KEY ||
       process.env.RAZORPAY_KEY_PUBLIC;
+
     return res.status(201).json({ ...savedPayment.toJSON(), keyId });
   } catch (err) {
     console.error('Create order error:', err);
@@ -63,20 +70,31 @@ paymentRouter.post('/payment/createOrder', userAuth, async (req, res) => {
   }
 });
 
-// webhook route — use server path (public URL must point here)
+// =======================
+//  WEBHOOK ENDPOINT
+// =======================
+// NOTE: Ensure in app.js you use this BEFORE routes:
+// app.use(express.json({ verify: (req, res, buf) => { req.rawBody = buf; } }));
 paymentRouter.post('/payment/webhook', async (req, res) => {
   try {
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
-    if (!webhookSecret)
+    if (!webhookSecret) {
+      console.error('Missing RAZORPAY_WEBHOOK_SECRET');
       return res.status(500).json({ error: 'Webhook secret not configured' });
+    }
 
-    // req.rawBody must be set by express.json verify middleware:
-    // app.use(express.json({ verify: (req,res,buf) => { req.rawBody = buf; } }));
     const rawBody = req.rawBody || Buffer.from(JSON.stringify(req.body));
     const receivedSignature = req.get('x-razorpay-signature');
 
     if (!receivedSignature) {
+      console.warn('Missing webhook signature header');
       return res.status(400).json({ status: 'missing signature' });
+    }
+
+    // Validate signature format
+    if (!/^[0-9a-fA-F]+$/.test(receivedSignature)) {
+      console.warn('Invalid signature format (not hex)');
+      return res.status(400).json({ status: 'invalid signature format' });
     }
 
     const expectedSignature = crypto
@@ -85,38 +103,44 @@ paymentRouter.post('/payment/webhook', async (req, res) => {
       .digest('hex');
 
     const expectedBuf = Buffer.from(expectedSignature, 'hex');
-    let receivedBuf;
-    try {
-      receivedBuf = Buffer.from(receivedSignature, 'hex');
-    } catch (e) {
-      receivedBuf = Buffer.from(receivedSignature);
-    }
+    const receivedBuf = Buffer.from(receivedSignature, 'hex');
 
     if (
       expectedBuf.length !== receivedBuf.length ||
       !crypto.timingSafeEqual(expectedBuf, receivedBuf)
     ) {
-      console.log('❌ Invalid webhook signature');
+      console.warn('❌ Invalid webhook signature');
       return res.status(400).json({ status: 'invalid signature' });
     }
 
     console.log('✅ Webhook verified successfully');
 
     const paymentDetails = req.body?.payload?.payment?.entity;
-    if (!paymentDetails)
+    if (!paymentDetails) {
+      console.warn('Webhook missing payment details');
       return res.status(400).json({ status: 'missing payment details' });
+    }
 
     const orderId = paymentDetails.order_id;
-    if (!orderId) return res.status(400).json({ status: 'missing order id' });
+    if (!orderId) {
+      console.warn('Webhook missing orderId');
+      return res.status(400).json({ status: 'missing order id' });
+    }
 
+    // Find payment record
     const payment = await Payment.findOne({ orderId });
     if (!payment) {
       console.warn('No payment record for orderId:', orderId);
-      // respond 200 to avoid retries if you don't want to create a record here
+      // Respond 200 to stop Razorpay retries
       return res.status(200).json({ status: 'no matching order' });
     }
 
-    // idempotent update
+    // Save Razorpay payment id if not already stored
+    if (payment.paymentId !== paymentDetails.id) {
+      payment.paymentId = paymentDetails.id;
+    }
+
+    // Idempotent update of payment status
     if (payment.status !== paymentDetails.status) {
       payment.status = paymentDetails.status;
       payment.rawPayload = req.body;
@@ -125,19 +149,19 @@ paymentRouter.post('/payment/webhook', async (req, res) => {
       console.log('Webhook already processed for order:', orderId);
     }
 
+    // Mark user as premium ONLY when payment captured
     if (
       req.body.event === 'payment.captured' ||
       paymentDetails.status === 'captured'
     ) {
       const user = await User.findById(payment.userId);
-      if (user) {
+      if (user && !user.isPremium) {
         user.isPremium = true;
-        if (paymentDetails.notes && paymentDetails.notes.memberShipType) {
+        if (paymentDetails.notes?.memberShipType) {
           user.memberShipType = paymentDetails.notes.memberShipType;
         }
         await user.save();
-      } else {
-        console.warn('User not found for id', payment.userId);
+        console.log(`✅ User ${user._id} upgraded to premium`);
       }
     }
 
