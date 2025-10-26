@@ -19,7 +19,7 @@ const Premium = () => {
       description,
       image: '/frontend/logo.png',
       order_id, //This is a sample Order ID. Pass the `id` obtained in the response of Step 1
-      callback_url: 'https://eneqd3r9zrjok.x.pipedream.net/',
+      callback_url: BASE_URL + '/payment/webhook',
       prefill: {
         name: notes.firstName + ' ' + notes.lastName,
         email: notes.emailId,
