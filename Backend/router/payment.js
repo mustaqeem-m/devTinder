@@ -78,18 +78,11 @@ paymentRouter.post('/payment/createOrder', userAuth, async (req, res) => {
 paymentRouter.post('/payment/webhook', async (req, res) => {
   try {
     console.log('Webhook headers:', req.headers);
-    const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
-    if (!webhookSecret) {
-      console.error('Missing RAZORPAY_WEBHOOK_SECRET');
-      return res.status(500).json({ error: 'Webhook secret not configured' });
-    }
-
-    const rawBody = req.rawBody || Buffer.from(JSON.stringify(req.body));
     const receivedSignature = req.get('x-razorpay-signature');
 
     if (!receivedSignature) {
-      console.warn('Missing webhook signature header');
-      return res.status(400).json({ status: 'missing signature' });
+      console.error('Missing x-razorpay-signature header');
+      return res.status(400).json({ status: 'error', message: 'Missing x-razorpay-signature header' });
     }
 
     // Validate signature format
