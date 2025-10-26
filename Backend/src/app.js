@@ -23,6 +23,7 @@ app.use(
   express.json({
     verify: (req, res, buf) => {
       req.rawBody = buf;
+      console.log('rawBody in app.js:', req.rawBody);
     },
   })
 );
