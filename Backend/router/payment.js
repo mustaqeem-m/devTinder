@@ -77,6 +77,7 @@ paymentRouter.post('/payment/createOrder', userAuth, async (req, res) => {
 // app.use(express.json({ verify: (req, res, buf) => { req.rawBody = buf; } }));
 paymentRouter.post('/payment/webhook', async (req, res) => {
   try {
+    console.log('Webhook headers:', req.headers);
     const webhookSecret = process.env.RAZORPAY_WEBHOOK_SECRET;
     if (!webhookSecret) {
       console.error('Missing RAZORPAY_WEBHOOK_SECRET');
