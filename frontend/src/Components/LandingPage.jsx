@@ -67,7 +67,7 @@ function useParticleCanvas() {
    Drop-in replacement for your existing motion div + img logo.
 */
 function InteractiveLogo({
-  src = '../../public/download.png',
+  src = '/download.png',
   size = 176 /* px, matches w-44 */,
 }) {
   const wrapRef = useRef(null);
@@ -237,7 +237,7 @@ const LandingPage = () => {
           {/* Left column: hero */}
           <section className="flex-1 flex flex-col items-center lg:items-start text-center lg:text-left">
             {/* REPLACED: interactive logo */}
-            <InteractiveLogo src="../../public/download.png" />
+            <InteractiveLogo src="../../download.png" />
 
             <motion.h1
               initial={{ opacity: 0, y: -28 }}
