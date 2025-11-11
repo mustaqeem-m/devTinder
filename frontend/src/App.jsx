@@ -12,6 +12,7 @@ import Requests from './Components/Requests.jsx';
 import Chat from './Components/Chat.jsx';
 import SwipeDeck from './Components/SwipeDeck.jsx';
 import Premium from './Components/Premium';
+import LandingPage from './Components/LandingPage';
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
         <BrowserRouter basename="/">
           <Routes>
             <Route path="/" element={<Body />}>
+              <Route path="/welcome" element={<LandingPage />} />
               <Route path="/feed" element={<Feed />} />
               <Route path="/login" element={<Login />} />
               <Route path="/profile" element={<Profile />} />
