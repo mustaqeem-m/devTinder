@@ -1,6 +1,3 @@
-// LandingPage.jsx
-// Dependencies: framer-motion, react-icons
-// npm install framer-motion react-icons
 import React, { useRef, useEffect } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { motion, useMotionValue, useSpring, useTransform } from 'framer-motion';

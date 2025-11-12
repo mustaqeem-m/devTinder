@@ -60,14 +60,17 @@ const Navbar = () => {
             className="btn btn-ghost btn-circle avatar"
           >
             {user && (
-              <div className="w-10 rounded-full overflow-hidden">
-                <img
-                  alt={`${user.firstName || 'User'} avatar`}
-                  src={user?.profile || '../../public/icon.png'}
-                  onError={(e) =>
-                    (e.currentTarget.src = '/fallback-avatar.png')
-                  }
-                />
+              <div className="relative group">
+                <div className="absolute inset-0 rounded-full border-2 border-emerald-400/40 animate-pulse group-hover:border-emerald-400 transition"></div>
+                <div className="w-10 h-10 rounded-full overflow-hidden relative z-10 ring-2 ring-slate-700 group-hover:ring-emerald-400 transition">
+                  <img
+                    alt={`${user.firstName || 'User'} avatar`}
+                    src={user?.profile || '/fallback-avatar.png'}
+                    onError={(e) =>
+                      (e.currentTarget.src = '/fallback-avatar.png')
+                    }
+                  />
+                </div>
               </div>
             )}
           </div>
