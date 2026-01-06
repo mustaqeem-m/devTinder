@@ -33,7 +33,7 @@ const authRouter = require('../router/auth');
 const profileRouter = require('../router/profile.js');
 const requestRouter = require('../router/request.js');
 const userRouter = require('../router/user.js');
-const { chatRouter } = require('../router/chat.js');
+const chatRouter = require('../router/chat.js');
 const paymentRouter = require('../router/payment.js');
 
 app.use('/', authRouter);

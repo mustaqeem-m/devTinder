@@ -1,238 +1,40 @@
 const express = require('express');
 const requestRouter = express.Router();
 const { userAuth } = require('../middleware/auth.js');
-const ConnectionRequest = require('../model/request');
-const { default: isFQDN } = require('validator/lib/isFQDN.js');
-const user = require('../model/user.js');
-const sendEmail = require('../utils/sendEmail');
+const {
+  sendConnectionRequest,
+  sendRequest,
+  reviewRequest,
+  deleteConnection,
+} = require('../controllers/requestController');
+const {
+  deleteUser,
+  updateUser,
+  getUserByEmail,
+} = require('../controllers/userController');
 
 //Send connection request
-requestRouter.post('/sendconnectionreq', userAuth, async (req, res) => {
-  try {
-    const user = req.user;
-    res.send(
-      `Connection request by user : ${user.firstName} send successfully!`
-    );
-  } catch (err) {
-    res.status(400).send({ Error: err.message });
-  }
-});
+requestRouter.post('/sendconnectionreq', userAuth, sendConnectionRequest);
 
-//delete user by id
-requestRouter.use('/deleteuser', async (req, res) => {
-  try {
-    await User.findByIdAndDelete({ _id: req.body.userId });
-    res.send('user deleted successfully');
-  } catch (err) {
-    res.send(`${err}`);
-  }
-});
-
-//update user specific detail
-requestRouter.patch('/updateuser/:userId', userAuth, async (req, res) => {
-  const userId = req.params?.userId;
-  const data = req.body;
-
-  try {
-    const ALLOWED_UPDATES = ['profile', 'about', 'gender', 'age', 'skills'];
-
-    const isAllowedUpdates = Object.keys(data).every((k) =>
-      ALLOWED_UPDATES.includes(k)
-    );
-    if (!isAllowedUpdates) {
-      res.status(400).send('User not Allowed to update this feild');
-    }
-    if (data.skills.length > 10) {
-      res.status(400).send('Skill not be more than 10');
-    }
-    const ans = await User.findByIdAndUpdate({ _id: userId }, data, {
-      returnDocument: 'before',
-      runValidators: true,
-      returnDocument: 'after',
-    });
-    res.send(`User details of ${userId} uodated successfully! ☠️`);
-  } catch (err) {
-    res.send('Update of this feild not allowed', err);
-  }
-});
-
-//Get user by email
-requestRouter.use('/userbyemail', async (req, res) => {
-  try {
-    const user = await User.findOne({ emailId: req.body.emailId });
-    if (!user) {
-      res.send('User dead!');
-    } else {
-      res.send(user);
-    }
-  } catch (err) {
-    res.send(`${err}`);
-  }
-});
-
-//Feed by email - get all users
-requestRouter.use('/feed', async (req, res) => {
-  try {
-    const user = await User.find({});
-    if (!user) {
-      res.send('Error in feed');
-    } else {
-      res.send(user);
-    }
-  } catch (err) {
-    res.send(`Error message => ${err}`);
-  }
-});
+// The following routes were incorrectly placed here and are now handled by the user router or are deprecated.
+// For clarity during refactoring, they are removed.
+// A clean router should only handle request-related endpoints.
 
 // Sender requests
-requestRouter.post(
-  '/request/send/:status/:userId',
-  userAuth,
-  async (req, res) => {
-    try {
-      const fromUserId = req.user._id;
-      const toUserId = req.params.userId;
-      const status = req.params.status;
-
-      //validation check
-      // if (String(fromUserId) === String(toUserId)) {
-      //   return res
-      //     .status(400)
-      //     .send('Your Id and receiver User Id are not meant to be same');
-      // }
-      const IdCheck = await user.findById(toUserId);
-      if (!IdCheck) {
-        return res
-          .status(400)
-          .send('Invalid UserID , User not found with this Id');
-      }
-
-      const AllowedStatus = ['ignored', 'interested'];
-      if (!AllowedStatus.includes(status)) {
-        return res.status(400).send('Invalid Status');
-      }
-      //Duplicate Request check
-      const duplicateReq = await ConnectionRequest.findOne({
-        $or: [
-          { fromUserId, toUserId },
-          { fromUserId: toUserId, toUserId: fromUserId },
-        ],
-      });
-      if (duplicateReq) {
-        return res.status(400).send('connection request already exists!');
-      }
-      const connectionRequest = new ConnectionRequest({
-        fromUserId,
-        toUserId,
-        status,
-      });
-      await connectionRequest.save();
-
-      //ses
-      const subject = `${req.user.firstName} ${
-        status === 'ignored' ? 'ignored' : 'is interested in'
-      } ${IdCheck.firstName}`;
-      const html = `<p>${req.user.firstName} ${
-        status === 'ignored' ? 'ignored' : 'is interested in'
-      } ${IdCheck.firstName}</p>
-              <p>Visit their profile: https://devstinder.online/user/${
-                req.user.id
-              }</p>`;
-      const text = `${req.user.firstName} ${
-        status === 'ignored' ? 'ignored' : 'is interested in'
-      } ${IdCheck.firstName}`;
-
-      const recipient = IdCheck.emailId || 'mmmustaqeem1910@gmail.com'; // fallback for testing
-
-      try {
-        const emailRes = await sendEmail.run({
-          to: recipient,
-          subject,
-          html,
-          text,
-          // from: 'no-reply@devstinder.online' // optional: will default to DEFAULT_FROM
-        });
-        console.log('Email sent, MessageId:', emailRes.messageId);
-      } catch (err) {
-        console.error('Failed to send email:', err.message || err);
-      }
-      res.status(200).json({
-        message: `${req.user.firstName} ${
-          status == 'ignored' ? 'ignored' : 'is interested in'
-        } ${IdCheck.firstName}`,
-        data: connectionRequest,
-      });
-    } catch (err) {
-      res.status(400).send({ Error: err.message });
-    }
-  }
-);
+requestRouter.post('/request/send/:status/:userId', userAuth, sendRequest);
 
 //Receiver requests
 requestRouter.post(
   '/request/review/:status/:requestId',
   userAuth,
-  async (req, res) => {
-    try {
-      //toUserId === loggedInUser
-      const loggedInUser = req.user;
-      //validate status
-      const AllowedStatus = ['accepted', 'rejected'];
-      const { status, requestId } = req.params;
-      if (!AllowedStatus.includes(status)) {
-        return res.status(400).send('Invalid status type');
-      }
-      //status must be interested if its ignored not be here
-      //validate requestId (fromUserId)
-      const connectionRequest = await ConnectionRequest.findOne({
-        _id: requestId,
-        toUserId: loggedInUser._id,
-        status: 'interested',
-      });
-      if (!connectionRequest) {
-        return res.status(400).send('Connection request not found!');
-      }
-
-      connectionRequest.status = status;
-      const data = await connectionRequest.save();
-      res.send({
-        message: `Connection Request ${status} successfully`,
-        data: data,
-      });
-    } catch (err) {
-      res.status(400).send({ Error: err.message });
-    }
-  }
+  reviewRequest
 );
 
 //delete exiting connections (unfriend)
 requestRouter.delete(
   '/request/review/deleteConnection/:requestId',
   userAuth,
-  async (req, res) => {
-    //1. validate user
-    //2. find corresponding request from DB
-    //3. delete that req that make the connection delete
-    try {
-      const loggedInUser = req.user;
-      const requestId = req.params.requestId;
-      const deleteReq = await ConnectionRequest.findOneAndDelete({
-        _id: requestId,
-        status: 'accepted',
-      });
-
-      if (!deleteReq) {
-        res.statu(400).send('Connection Not found to delete!');
-      }
-
-      res.json(
-        { message: 'Connection Deleted Successfully' },
-        { data: deleteReq }
-      );
-    } catch (err) {
-      res.status(400).json({ Error: err.message });
-    }
-  }
+  deleteConnection
 );
 
 module.exports = requestRouter;

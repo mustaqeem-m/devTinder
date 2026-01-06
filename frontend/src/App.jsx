@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Navbar from './Components/Navbar';
 import Body from './Components/Body';
 import Login from './Components/Login';
@@ -18,7 +18,7 @@ function App() {
   return (
     <div>
       <Provider store={appStore}>
-        <BrowserRouter basename="/">
+        <Router basename="/">
           <Routes>
             <Route path="/" element={<Body />}>
               <Route path="/welcome" element={<LandingPage />} />
@@ -33,7 +33,7 @@ function App() {
               <Route path="/chat/:targetUserId" element={<Chat />}></Route>
             </Route>
           </Routes>
-        </BrowserRouter>
+        </Router>
       </Provider>
     </div>
   );
